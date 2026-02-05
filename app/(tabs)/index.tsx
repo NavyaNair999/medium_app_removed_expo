@@ -1,98 +1,131 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  StatusBar,
+  Pressable,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
+import { ArticleCard } from '@/components/ArticleCard';
+import { TabBar } from '@/components/TabBar';
+import { FloatingActionButton } from '@/components/FloatingActionButton';
+import { useTheme } from '@/context/ThemeContext';
+import { SPACING, TYPOGRAPHY, DUMMY_ARTICLES } from '@/constants';
+import { Article } from '@/types';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const TABS = ['For you', 'Featured'];
+
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList<Article>);
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [activeTab, setActiveTab] = useState(0);
+  const scrollY = useSharedValue(0);
+  const { colors, theme, toggleTheme } = useTheme();
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
+
+  const filteredArticles =
+    activeTab === 0
+      ? DUMMY_ARTICLES
+      : DUMMY_ARTICLES.filter((article) => article.featured);
+
+  const renderHeader = () => (
+    <View style={[styles.stickyHeader, { backgroundColor: colors.background }]}>
+      <View style={[styles.headerContainer, { backgroundColor: colors.background }]}>
+        <Text style={[styles.logo, { color: colors.text.primary }]}>Medium</Text>
+        <View style={styles.headerActions}>
+          <Pressable 
+            style={styles.themeButton}
+            onPress={toggleTheme}
+          >
+            <Ionicons 
+              name={theme === 'light' ? 'moon' : 'sunny'} 
+              size={24} 
+              color={colors.text.secondary} 
+            />
+          </Pressable>
+          <Pressable style={styles.notificationButton}>
+            <Ionicons name="notifications-outline" size={24} color={colors.text.secondary} />
+          </Pressable>
+        </View>
+      </View>
+      <TabBar tabs={TABS} activeTab={activeTab} onTabPress={setActiveTab} />
+    </View>
+  );
+
+  const renderArticle = ({ item }: { item: Article }) => (
+    <ArticleCard
+      article={item}
+      onPress={() => console.log('Article pressed:', item.id)}
+    />
+  );
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+      <StatusBar 
+        barStyle={theme === 'light' ? 'dark-content' : 'light-content'} 
+        backgroundColor={colors.background} 
+      />
+      
+      {renderHeader()}
+
+      <AnimatedFlatList
+        data={filteredArticles}
+        renderItem={renderArticle}
+        keyExtractor={(item) => item.id}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
+
+      <FloatingActionButton onPress={() => console.log('Create new story')} />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  stickyHeader: {
+    zIndex: 10,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+  },
+  logo: {
+    fontSize: 32,
+    fontFamily: 'serif',
+    fontWeight: '400',
+  },
+  headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  themeButton: {
+    padding: SPACING.xs,
+    marginRight: SPACING.xs,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  notificationButton: {
+    padding: SPACING.xs,
+  },
+  listContent: {
+    paddingBottom: 100,
   },
 });

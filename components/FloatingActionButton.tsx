@@ -1,0 +1,77 @@
+import React from 'react';
+import { StyleSheet, Pressable } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withSequence,
+} from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '@/context/ThemeContext';
+import { SPACING } from '@/constants';
+
+interface FloatingActionButtonProps {
+  onPress?: () => void;
+}
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
+  onPress,
+}) => {
+  const scale = useSharedValue(1);
+  const rotation = useSharedValue(0);
+  const { colors } = useTheme();
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scale.value },
+      { rotate: `${rotation.value}deg` },
+    ],
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.9, { damping: 15 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15 });
+    rotation.value = withSequence(
+      withSpring(-15, { damping: 10 }),
+      withSpring(15, { damping: 10 }),
+      withSpring(0, { damping: 10 })
+    );
+  };
+
+  return (
+    <AnimatedPressable
+      style={[styles.fab, animatedStyle, { backgroundColor: colors.accent }]}
+      onPress={onPress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+    >
+      <Ionicons name="create-outline" size={28} color={colors.background} />
+    </AnimatedPressable>
+  );
+};
+
+const styles = StyleSheet.create({
+  fab: {
+    position: 'absolute',
+    bottom: SPACING.lg,
+    right: SPACING.lg,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+});
