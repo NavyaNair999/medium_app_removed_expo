@@ -93,7 +93,6 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     paddingTop: SPACING.lg,
      paddingLeft:SPACING.lg,
-   
   },
   title: {
     ...TYPOGRAPHY.h1,
