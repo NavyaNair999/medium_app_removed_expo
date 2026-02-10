@@ -7,6 +7,9 @@
     "scheme": "medium",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "jsEngine": "hermes",
+    
+
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -15,39 +18,43 @@
         }
       }
     },
+
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#E6F4FE"
       },
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE"
       ],
-      "usesCleartextTraffic": true,
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.neha9044.medium",
+      "config": {
+        "usesCleartextTraffic": true
+      },
+      "enableShrinkResourcesInReleaseBuilds": true,
+      "enableProguardInReleaseBuilds": true
     },
+
     "web": {
-      "output": "static",
+      "output": "static"
     },
+
     "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
-        }
-      ]
+      "expo-router"
     ],
+
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c5733c67-5b7e-4125-a564-40d99a812b27"
+      }
     }
   }
 }

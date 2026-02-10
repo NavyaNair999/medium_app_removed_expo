@@ -1,9 +1,8 @@
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import tamaguiConfig from '@/tamagui.config';
 import {
-  darkTheme as restyleDarkTheme,
-  lightTheme as restyleLightTheme,
-  Theme as RestyleTheme,
+    darkTheme as restyleDarkTheme,
+    lightTheme as restyleLightTheme,
+    Theme as RestyleTheme,
 } from '@/theme/restyle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeProvider as RestyleThemeProvider } from '@shopify/restyle';
@@ -49,6 +48,7 @@ const darkColors: ThemeColors = {
   accent: '#1A8917',
 };
 
+// React Native Paper theme customization
 const customLightTheme = {
   ...MD3LightTheme,
   colors: {
@@ -156,13 +156,11 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     <ThemeContext.Provider
       value={{ theme, colors, activeTheme, paperTheme, restyleTheme, setTheme }}
     >
-      <GluestackUIProvider mode={activeTheme}>
-        <TamaguiProvider config={tamaguiConfig} defaultTheme={activeTheme}>
-          <RestyleThemeProvider theme={restyleTheme}>
-            <PaperProvider theme={paperTheme}>{children}</PaperProvider>
-          </RestyleThemeProvider>
-        </TamaguiProvider>
-      </GluestackUIProvider>
+      <TamaguiProvider config={tamaguiConfig} defaultTheme={activeTheme}>
+        <RestyleThemeProvider theme={restyleTheme}>
+          <PaperProvider theme={paperTheme}>{children}</PaperProvider>
+        </RestyleThemeProvider>
+      </TamaguiProvider>
     </ThemeContext.Provider>
   );
 };

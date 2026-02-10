@@ -1,12 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { Box } from '@/components/restyle-components';
 import { useTheme } from '@/context/ThemeContext';
-import { SPACING, TYPOGRAPHY } from '@/constants';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, Text as RNText, View } from 'react-native';
 
 interface TabBarProps {
   tabs: string[];
@@ -14,115 +9,95 @@ interface TabBarProps {
   onTabPress: (index: number) => void;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 export const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabPress }) => {
-  const translateX = useSharedValue(0);
-  const indicatorWidth = useSharedValue(60);
-  const tabRefs = useRef<Array<View | null>>([]);
   const { colors } = useTheme();
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const tabRefs = useRef<Array<View | null>>([]);
+  const animatedLeft = useRef(new Animated.Value(0)).current;
+  const animatedWidth = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    // Measure the active tab and update indicator
     const activeTabRef = tabRefs.current[activeTab];
     if (activeTabRef) {
-      activeTabRef.measure((x, y, width, height, pageX, pageY) => {
-        translateX.value = withTiming(pageX, { duration: 200 });
-        indicatorWidth.value = withTiming(width, { duration: 200 });
+      activeTabRef.measure((_x, _y, width, _height, pageX, _pageY) => {
+        const newLeft = pageX;
+        const newWidth = width;
+
+        Animated.parallel([
+          Animated.spring(animatedLeft, {
+            toValue: newLeft,
+            useNativeDriver: false,
+            tension: 100,
+            friction: 10,
+          }),
+          Animated.spring(animatedWidth, {
+            toValue: newWidth,
+            useNativeDriver: false,
+            tension: 100,
+            friction: 10,
+          }),
+        ]).start();
+
+        setIndicatorStyle({ left: newLeft, width: newWidth });
       });
     }
-  }, [activeTab]);
-
-  const indicatorStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-    width: indicatorWidth.value,
-  }));
+  }, [activeTab, animatedLeft, animatedWidth]);
 
   const TabButton = ({ tab, index }: { tab: string; index: number }) => {
     const isActive = activeTab === index;
-    const scale = useSharedValue(1);
-    const opacity = useSharedValue(0);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-      transform: [{ scale: scale.value }],
-      backgroundColor: `rgba(128, 128, 128, ${opacity.value * 0.15})`,
-    }));
-
-    const handlePressIn = () => {
-      scale.value = withTiming(0.95, { duration: 100 });
-      opacity.value = withTiming(1, { duration: 100 });
-    };
-
-    const handlePressOut = () => {
-      scale.value = withTiming(1, { duration: 100 });
-      opacity.value = withTiming(0, { duration: 150 });
-    };
 
     return (
-      <AnimatedPressable
+      <Pressable
         ref={(ref) => {
-          tabRefs.current[index] = ref as any;
+          tabRefs.current[index] = ref as unknown as View;
         }}
-        style={[styles.tab, animatedStyle]}
         onPress={() => onTabPress(index)}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
       >
-        <Text
-          style={[
-            styles.tabText,
-            { color: colors.text.secondary },
-            isActive && { color: colors.text.primary },
-          ]}
+        <Box
+          paddingVertical="m"
+          paddingHorizontal="l"
         >
-          {tab}
-        </Text>
-      </AnimatedPressable>
+          <RNText
+            style={{
+              fontSize: 16,
+              fontWeight: isActive ? '400' : '400',
+              color: isActive ? colors.text.primary : colors.text.secondary,
+            }}
+          >
+            {tab}
+          </RNText>
+        </Box>
+      </Pressable>
     );
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
-      <View style={styles.tabsContainer}>
+    <Box 
+      backgroundColor="background"
+      position="relative"
+    >
+      <Box flexDirection="row" paddingHorizontal="m">
         {tabs.map((tab, index) => (
           <TabButton key={tab} tab={tab} index={index} />
         ))}
-      </View>
-      <Animated.View 
-        style={[
-          styles.indicator, 
-          { backgroundColor: colors.text.primary }, 
-          indicatorStyle
-        ]} 
+      </Box>
+      
+      <Animated.View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          height: 1,
+          backgroundColor: colors.text.primary,
+          left: animatedLeft,
+          width: animatedWidth,
+        }}
       />
-    </View>
+      
+      <Box
+        height={1}
+        backgroundColor="border"
+        width="100%"
+      />
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    borderBottomWidth: 1,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: SPACING.md,
-  },
-  tab: {
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-    marginRight: SPACING.xs,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-  },
-  tabText: {
-    ...TYPOGRAPHY.body,
-    fontWeight: '500',
-  },
-  indicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    height: 1.5,
-  },
-});

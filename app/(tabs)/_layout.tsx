@@ -1,26 +1,26 @@
-import React from 'react';
-import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, View } from 'react-native';
+import { Box } from '@/components/restyle-components';
 import { useTheme } from '@/context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
+import React from 'react';
+import 'react-native-gesture-handler';
+
 
 export default function TabLayout() {
   const { colors } = useTheme();
 
-  const renderIcon = (name: string, focused: boolean, color: string) => {
-    return (
-      <View
-        style={[
-          styles.iconContainer,
-          {
-            backgroundColor: focused ? colors.surface : 'transparent',
-          },
-        ]}
-      >
-        <Ionicons name={name as any} size={24} color={color} />
-      </View>
-    );
-  };
+  const renderIcon = (name: string, focused: boolean, color: string) => (
+    <Box
+      width={48}
+      height={48}
+      borderRadius="l"
+      alignItems="center"
+      justifyContent="center"
+      backgroundColor={focused ? 'surface' : 'transparent'}
+    >
+      <Ionicons name={name as any} size={24} color={color} />
+    </Box>
+  );
 
   return (
     <Tabs
@@ -45,7 +45,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
           tabBarIcon: ({ color, focused }) =>
             renderIcon(focused ? 'home' : 'home-outline', focused, color),
         }}
@@ -53,7 +52,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="following"
         options={{
-          title: 'Following',
           tabBarIcon: ({ color, focused }) =>
             renderIcon(focused ? 'people' : 'people-outline', focused, color),
         }}
@@ -61,7 +59,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="search"
         options={{
-          title: 'Search',
           tabBarIcon: ({ color, focused }) =>
             renderIcon(focused ? 'search' : 'search-outline', focused, color),
         }}
@@ -69,7 +66,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="library"
         options={{
-          title: 'Library',
           tabBarIcon: ({ color, focused }) =>
             renderIcon(focused ? 'bookmark' : 'bookmark-outline', focused, color),
         }}
@@ -77,7 +73,6 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
           tabBarIcon: ({ color, focused }) =>
             renderIcon(focused ? 'person' : 'person-outline', focused, color),
         }}
@@ -85,13 +80,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

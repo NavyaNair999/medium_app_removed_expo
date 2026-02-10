@@ -1,65 +1,52 @@
+import { Box, Text } from '@/components/restyle-components';
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { useTheme } from '@/context/ThemeContext';
-import { SPACING, TYPOGRAPHY } from '@/constants';
+import { Pressable } from 'react-native';
 
-interface EmptyStateProps {
+type Props = {
   title: string;
   message: string;
-  actionText?: string;
-  onActionPress?: () => void;
-}
+  actionText: string;
+  onActionPress: () => void;
+};
 
-export const EmptyState: React.FC<EmptyStateProps> = ({
+export function EmptyState({
   title,
   message,
   actionText,
   onActionPress,
-}) => {
-  const { colors } = useTheme();
-
+}: Props) {
   return (
-    <View style={styles.container}>
-      <Text style={[styles.title, { color: colors.text.primary }]}>{title}</Text>
-      <Text style={[styles.message, { color: colors.text.secondary }]}>{message}</Text>
-      {actionText && onActionPress && (
-        <Pressable 
-          style={[styles.button, { borderColor: colors.text.primary }]} 
-          onPress={onActionPress}
-        >
-          <Text style={[styles.buttonText, { color: colors.text.primary }]}>{actionText}</Text>
-        </Pressable>
-      )}
-    </View>
-  );
-};
+    <Box alignItems="center">
+      <Text
+        fontSize={20}
+        fontWeight="500"
+        textAlign="center"
+        marginBottom="s"
+        color="textPrimary"
+      >
+        {title}
+      </Text>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.xl * 2,
-  },
-  title: {
-    ...TYPOGRAPHY.h3,
-    marginBottom: SPACING.md,
-    textAlign: 'center',
-  },
-  message: {
-    ...TYPOGRAPHY.body,
-    textAlign: 'center',
-    marginBottom: SPACING.lg,
-  },
-  button: {
-    paddingVertical: SPACING.sm + 2,
-    paddingHorizontal: SPACING.lg,
-    borderRadius: 24,
-    borderWidth: 1,
-  },
-  buttonText: {
-    ...TYPOGRAPHY.body,
-    fontWeight: '500',
-  },
-});
+      <Text
+        fontSize={14}
+        color="textSecondary"
+        textAlign="center"
+        marginBottom="m"
+        lineHeight={20}
+      >
+        {message}
+      </Text>
+
+      <Pressable onPress={onActionPress}>
+        <Text
+          fontSize={14}
+          textAlign="center"
+          style={{ textDecorationLine: 'underline' }}
+          color="textPrimary"
+        >
+          {actionText}
+        </Text>
+      </Pressable>
+    </Box>
+  );
+}

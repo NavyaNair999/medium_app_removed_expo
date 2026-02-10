@@ -1,22 +1,23 @@
+import { SPACING, TYPOGRAPHY } from '@/constants';
+import { useTheme } from '@/context/ThemeContext';
+import { Article } from '@/types';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Pressable,
   Dimensions,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
+import { IconButton, Surface } from 'react-native-paper';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { Ionicons } from '@expo/vector-icons';
-import { Article } from '@/types';
-import { useTheme } from '@/context/ThemeContext';
-import { SPACING, TYPOGRAPHY } from '@/constants';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -90,9 +91,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onPress }) =>
     }
 
     return (
-      <View style={[styles.thumbnail, styles.thumbnailFallback, { backgroundColor: colors.surface }]}>
+      <Surface style={[styles.thumbnail, styles.thumbnailFallback]} elevation={0}>
         <Ionicons name="image-outline" size={32} color={colors.text.secondary} />
-      </View>
+      </Surface>
     );
   };
 
@@ -143,7 +144,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onPress }) =>
             )}
           </View>
         </View>
-        <Ionicons name="ellipsis-horizontal" size={20} color={colors.text.secondary} />
+        <IconButton
+          icon="dots-horizontal"
+          size={20}
+          iconColor={colors.text.secondary}
+          onPress={() => console.log('More options')}
+        />
       </View>
 
       <View style={styles.content}>
@@ -159,9 +165,13 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onPress }) =>
       </View>
 
       <View style={styles.footer}>
-        <Pressable style={[styles.dislikeButton, { borderColor: colors.text.secondary }]}>
-          <Ionicons name="thumbs-down-outline" size={18} color={colors.text.secondary} />
-        </Pressable>
+        <IconButton
+          icon="thumb-down-outline"
+          size={18}
+          iconColor={colors.text.secondary}
+          style={styles.dislikeButton}
+          onPress={() => console.log('Dislike')}
+        />
         
         <View style={styles.metaContainer}>
           <Text style={[styles.metaText, { color: colors.text.secondary }]}>{article.date}</Text>
@@ -283,12 +293,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dislikeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    margin: 0,
   },
   metaContainer: {
     flexDirection: 'row',

@@ -1,20 +1,12 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  StatusBar,
-  Pressable,
-  TextInput,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { Ionicons } from '@expo/vector-icons';
 import { ArticleCard } from '@/components/ArticleCard';
+import { Box, Text } from '@/components/restyle-components';
+import { DUMMY_ARTICLES, SPACING } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
-import { SPACING, TYPOGRAPHY, DUMMY_ARTICLES } from '@/constants';
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Pressable, ScrollView, StatusBar, TextInput } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TOPIC_TAGS = [
   'Self Improvement',
@@ -35,7 +27,7 @@ export default function SearchScreen() {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={{ flex: 1, backgroundColor: colors.background }}
       edges={['top']}
     >
       <StatusBar
@@ -43,116 +35,163 @@ export default function SearchScreen() {
         backgroundColor={colors.background}
       />
 
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text.primary }]}>Explore</Text>
-      </View>
+      {/* Header */}
+      <Box paddingHorizontal="m" paddingVertical="m">
+        <Text 
+          fontSize={32} 
+          fontWeight="400" 
+          color="textPrimary"
+          marginBottom="l"
+        >
+          Explore
+        </Text>
 
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <View style={[styles.searchBar, { backgroundColor: colors.surface }]}>
+        {/* Search Bar */}
+        <Box
+          flexDirection="row"
+          alignItems="center"
+          backgroundColor="surface"
+          borderRadius="l"
+          paddingHorizontal="m"
+          paddingVertical="s"
+        >
           <Ionicons name="search" size={20} color={colors.text.secondary} />
           <TextInput
-            style={[styles.searchInput, { color: colors.text.primary }]}
             placeholder="Search Medium"
             placeholderTextColor={colors.text.secondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
+            style={{
+              flex: 1,
+              marginLeft: 8,
+              fontSize: 16,
+              color: colors.text.primary,
+              paddingVertical: 8,
+            }}
           />
-        </View>
-      </View>
+        </Box>
+      </Box>
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: SPACING.xl }}
         showsVerticalScrollIndicator={false}
       >
         {/* Topic Tags */}
-        <View style={styles.topicsSection}>
+        <Box paddingVertical="m">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.topicsScroll}
+            contentContainerStyle={{
+              paddingHorizontal: SPACING.md,
+            }}
           >
             {TOPIC_TAGS.map((tag, index) => (
-              <Animated.View
-                key={tag}
-                entering={FadeInDown.duration(400).delay(index * 50)}
-              >
-                <Pressable
-                  style={[
-                    styles.topicTag,
-                    { backgroundColor: colors.surface, borderColor: colors.border },
-                  ]}
+              <Pressable key={tag} onPress={() => console.log(`Pressed ${tag}`)}>
+                <Box
+                  paddingVertical="s"
+                  paddingHorizontal="l"
+                  marginRight="s"
+                  borderRadius="l"
+                  backgroundColor="surface"
+                  borderWidth={1}
+                  borderColor="border"
                 >
-                  <Text style={[styles.topicText, { color: colors.text.secondary }]}>
+                  <Text fontSize={15} color="textSecondary" fontWeight="400">
                     {tag}
                   </Text>
-                </Pressable>
-              </Animated.View>
+                </Box>
+              </Pressable>
             ))}
           </ScrollView>
-        </View>
+        </Box>
 
         {/* Trending Section */}
-        <View style={styles.trendingSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+        <Box paddingTop="l">
+          <Text
+            fontSize={20}
+            fontWeight="400"
+            color="textPrimary"
+            paddingHorizontal="m"
+            marginBottom="l"
+          >
             Trending on Medium
           </Text>
 
           {trendingArticles.map((article, index) => (
-            <Animated.View
-              key={article.id}
-              entering={FadeInDown.duration(400).delay(200 + index * 100)}
-            >
-              <View style={styles.trendingItem}>
-                <View style={styles.trendingNumber}>
-                  <Text style={[styles.trendingNumberText, { color: colors.text.secondary }]}>
-                    {String(index + 1).padStart(2, '0')}
-                  </Text>
-                </View>
-                <View style={styles.trendingContent}>
-                  <View style={styles.trendingHeader}>
-                    <View
-                      style={[
-                        styles.trendingAvatar,
-                        { backgroundColor: colors.accent },
-                      ]}
+            <Box key={article.id} paddingHorizontal="m" paddingVertical="m">
+              <Box flexDirection="row" style={{ gap: 16 }}>
+                {/* Number */}
+                <Text 
+                  fontSize={32} 
+                  fontWeight="300" 
+                  color="textSecondary"
+                  style={{ width: 40 }}
+                >
+                  {String(index + 1).padStart(2, '0')}
+                </Text>
+
+                {/* Content */}
+                <Box flex={1}>
+                  {/* Author and Collection */}
+                  <Box flexDirection="row" alignItems="center" marginBottom="s">
+                    {article.collection?.icon && (
+                      <Text fontSize={16} marginRight="xs">
+                        {article.collection.icon}
+                      </Text>
+                    )}
+                    <Text fontSize={13} color="textSecondary">
+                      In {article.collection?.name || 'General'} by{' '}
+                    </Text>
+                    <Text fontSize={13} color="textPrimary" fontWeight="600">
+                      {article.author.name}
+                    </Text>
+                  </Box>
+
+                  {/* Title */}
+                  <Pressable
+                    onPress={() => router.push(`/article?id=${article.id}`)}
+                  >
+                    <Text
+                      fontSize={16}
+                      fontWeight="700"
+                      color="textPrimary"
+                      lineHeight={22}
+                      marginBottom="s"
                     >
-                      <Text style={styles.trendingAvatarText}>
-                        {article.collection?.icon || '📝'}
-                      </Text>
-                    </View>
-                    <View style={styles.trendingMeta}>
-                      <Text style={[styles.trendingAuthor, { color: colors.text.secondary }]}>
-                        In {article.collection?.name || 'General'} by
-                      </Text>
-                      <Text style={[styles.trendingAuthorName, { color: colors.text.primary }]}>
-                        {article.author.name}
-                      </Text>
-                    </View>
-                  </View>
-                  <Pressable onPress={() => router.push(`/article?id=${article.id}`)}>
-                    <Text style={[styles.trendingTitle, { color: colors.text.primary }]}>
                       {article.title}
                     </Text>
                   </Pressable>
-                  {article.thumbnail && (
-                    <View style={styles.trendingImageContainer}>
-                      <View style={[styles.trendingImage, { backgroundColor: colors.surface }]} />
-                    </View>
-                  )}
-                  <Text style={[styles.trendingDate, { color: colors.text.secondary }]}>
+
+                  {/* Date */}
+                  <Text fontSize={13} color="textSecondary">
                     {article.date}
                   </Text>
-                </View>
-              </View>
-            </Animated.View>
+                </Box>
+
+                {/* Thumbnail */}
+                {article.thumbnail && (
+                  <Box
+                    width={56}
+                    height={56}
+                    borderRadius="xs"
+                    backgroundColor="surface"
+                  />
+                )}
+              </Box>
+            </Box>
           ))}
-        </View>
+        </Box>
 
         {/* Recommended Articles */}
-        <View style={styles.recommendedSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+        <Box paddingTop="xl">
+          <Text
+            fontSize={20}
+            fontWeight="400"
+            color="textPrimary"
+            paddingHorizontal="m"
+            marginBottom="l"
+          >
             Recommended for you
           </Text>
           {DUMMY_ARTICLES.slice(2, 5).map((article) => (
@@ -162,137 +201,8 @@ export default function SearchScreen() {
               onPress={() => router.push(`/article?id=${article.id}`)}
             />
           ))}
-        </View>
+        </Box>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    paddingTop: SPACING.lg,
-     paddingLeft:SPACING.lg,
-  },
-  title: {
-    ...TYPOGRAPHY.h1,
-  },
-  searchContainer: {
-    paddingHorizontal: SPACING.md,
-    paddingBottom: SPACING.md,
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm + 2,
-    borderRadius: 24,
-    gap: SPACING.sm,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    padding: 0,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: SPACING.xl,
-  },
-  topicsSection: {
-    paddingVertical: SPACING.md,
-  },
-  topicsScroll: {
-    paddingHorizontal: SPACING.md,
-    gap: SPACING.sm,
-  },
-  topicTag: {
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  topicText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  trendingSection: {
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.xl,
-  },
-  sectionTitle: {
-    ...TYPOGRAPHY.h2,
-    fontSize: 20,
-    paddingHorizontal: SPACING.md,
-    marginBottom: SPACING.lg,
-  },
-  trendingItem: {
-    flexDirection: 'row',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    gap: SPACING.md,
-  },
-  trendingNumber: {
-    width: 32,
-  },
-  trendingNumberText: {
-    fontSize: 28,
-    fontWeight: '300',
-  },
-  trendingContent: {
-    flex: 1,
-  },
-  trendingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: SPACING.sm,
-  },
-  trendingAvatar: {
-    width: 24,
-    height: 24,
-    borderRadius: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SPACING.xs,
-  },
-  trendingAvatarText: {
-    fontSize: 12,
-  },
-  trendingMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  trendingAuthor: {
-    fontSize: 13,
-  },
-  trendingAuthorName: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  trendingTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 24,
-    marginBottom: SPACING.sm,
-  },
-  trendingImageContainer: {
-    marginBottom: SPACING.sm,
-  },
-  trendingImage: {
-    width: '100%',
-    height: 120,
-    borderRadius: 4,
-  },
-  trendingDate: {
-    fontSize: 13,
-  },
-  recommendedSection: {
-    paddingTop: SPACING.lg,
-  },
-});

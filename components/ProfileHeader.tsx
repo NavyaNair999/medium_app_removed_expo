@@ -1,13 +1,10 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+// components/ProfileHeader.tsx
+import { Box, Text } from '@/components/restyle-components';
+import { SPACING } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
-import { SPACING, TYPOGRAPHY } from '@/constants';
+import { Ionicons } from '@expo/vector-icons';
+import React, { forwardRef } from 'react';
+import { Pressable, View } from 'react-native';
 
 type Props = {
   profile: {
@@ -20,155 +17,101 @@ type Props = {
   onSettingsPress: () => void;
 };
 
-export function ProfileHeader({
+export const ProfileHeader = forwardRef<View, Props>(({
   profile,
   onEditPress,
   onStatsPress,
   onSettingsPress,
-}: Props) {
+}, ref) => { 
   const { colors } = useTheme();
 
+  const getColorFromName = (name: string) => {
+    const colorList = [
+      '#FF6B35', '#4ECDC4', '#45B7D1', '#FFA07A',
+      '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2',
+    ];
+    const index = name.length % colorList.length;
+    return colorList[index];
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Settings */}
-      <Pressable style={styles.settings} onPress={onSettingsPress}>
-        <Ionicons
-          name="settings-outline"
-          size={22}
-          color={colors.text.secondary}
-        />
-      </Pressable>
-
-      {/* TOP ROW */}
-      <View style={styles.topRow}>
-        {/* Avatar */}
-        <View style={[styles.avatar, { backgroundColor: colors.accent }]}>
-          <Text style={[styles.avatarText, { color: colors.background }]}>
-            {profile.name.charAt(0)}
-          </Text>
-        </View>
-
-        {/* Name + followers */}
-        <View style={styles.info}>
-          <Text style={[styles.name, { color: colors.text.primary }]}>
-            {profile.name}
-          </Text>
-
-          <Text style={[styles.followers, { color: colors.text.secondary }]}>
-            {profile.followers ?? 0} followers · {profile.following ?? 1} following
-          </Text>
-        </View>
-      </View>
-
-      {/* ACTIONS */}
-      <View style={styles.actions}>
-        <Pressable
-          onPress={onStatsPress}
-          style={[styles.primaryButton, { backgroundColor: colors.surface }]}
-        >
-          <Text style={[styles.primaryText, { color: colors.text.primary }]}>
-            View stats
-          </Text>
+    /* ADD THE REF HERE */
+    <Box ref={ref} backgroundColor="background" paddingBottom="m">
+      {/* Settings Icon - Top Right */}
+      <Box
+        position="absolute"
+        style={{ top: SPACING.md, right: SPACING.md, zIndex: 10 }}
+      >
+        <Pressable onPress={onSettingsPress} style={{ padding: SPACING.xs }}>
+          <Ionicons
+            name="settings-outline"
+            size={24}
+            color={colors.text.secondary}
+          />
         </Pressable>
+      </Box>
 
-        <Pressable
-          onPress={onEditPress}
-          style={[styles.outlineButton, { borderColor: colors.border }]}
+      {/* Avatar and Name */}
+      <Box paddingHorizontal="m" paddingTop="xl">
+        <Box
+          width={80}
+          height={80}
+          borderRadius="round"
+          alignItems="center"
+          justifyContent="center"
+          marginBottom="m"
+          style={{ backgroundColor: getColorFromName(profile.name) }}
         >
-          <Text style={[styles.outlineText, { color: colors.text.primary }]}>
-            Edit your profile
+          <Text fontSize={32} fontWeight="700" color="foreground">
+            {profile.name.charAt(0).toUpperCase()}
           </Text>
-        </Pressable>
-      </View>
-    </View>
+        </Box>
+
+        <Text 
+          fontSize={24} 
+          fontWeight="400" 
+          color="textPrimary"
+          marginBottom="xs"
+        >
+          {profile.name}
+        </Text>
+
+        <Text fontSize={15} color="textSecondary" marginBottom="l">
+          {profile.followers ?? 0} followers · {profile.following ?? 1} following
+        </Text>
+
+        <Box flexDirection="row" style={{ gap: 12 }}>
+          <Pressable onPress={onStatsPress} style={{ flex: 1 }}>
+            <Box
+              paddingVertical="m"
+              borderRadius="l"
+              alignItems="center"
+              justifyContent="center"
+              backgroundColor="surface"
+            >
+              <Text fontSize={15} fontWeight="400" color="textPrimary">
+                View stats
+              </Text>
+            </Box>
+          </Pressable>
+
+          <Pressable onPress={onEditPress} style={{ flex: 1 }}>
+            <Box
+              paddingVertical="m"
+              borderRadius="l"
+              alignItems="center"
+              justifyContent="center"
+              borderWidth={1}
+              borderColor="textSecondary"
+              backgroundColor="transparent"
+            >
+              <Text fontSize={15} fontWeight="400" color="textPrimary">
+                Edit your profile
+              </Text>
+            </Box>
+          </Pressable>
+        </Box>
+      </Box>
+    </Box>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: SPACING.xl,
-    paddingBottom: SPACING.xl,
-    flexDirection: 'column',  
-     
-  },
-
-  settings: {
-    position: 'absolute',
-    top: SPACING.md,
-    right: SPACING.md,
-    zIndex: 10,
-  },
-
-  topRow: {
-    flexDirection: 'row',      
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.lg,
-  },
-
-  info: {
-    marginLeft: SPACING.md,
-    flexShrink: 1,
-  },
-
-  headerContent: {
-    alignItems: 'center',
-    flexDirection: 'column',
-    
-  },
-
-  avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: SPACING.md,
-  },
-
-  avatarText: {
-    fontSize: 32,
-    fontWeight: '700',
-  },
-
-  name: {
-    ...TYPOGRAPHY.h2,
-    marginBottom: SPACING.xs,
-  },
-
-  followers: {
-    ...TYPOGRAPHY.body,
-    marginBottom: SPACING.lg,
-  },
-
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    marginTop: SPACING.md,
-  },
-
-  primaryButton: {
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: 999,
-  },
-
-  primaryText: {
-    ...TYPOGRAPHY.body,
-    fontWeight: '500',
-  },
-
-  outlineButton: {
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: 999,
-    borderWidth: 1,
-  },
-
-  outlineText: {
-    ...TYPOGRAPHY.body,
-    fontWeight: '500',
-  },
 });

@@ -1,83 +1,42 @@
-import React from 'react';
-import { StyleSheet, Pressable } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withSequence,
-} from 'react-native-reanimated';
-import { Ionicons } from '@expo/vector-icons';
+import { Fab, FabIcon } from '@/components/ui/fab';
 import { useTheme } from '@/context/ThemeContext';
-import { SPACING } from '@/constants';
-import { Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface FloatingActionButtonProps {
   onPress?: () => void;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   onPress,
 }) => {
-  const scale = useSharedValue(1);
-  const rotation = useSharedValue(0);
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { rotate: `${rotation.value}deg` },
-    ],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.9, { damping: 15 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15 });
-    rotation.value = withSequence(
-      withSpring(-15, { damping: 10 }),
-      withSpring(15, { damping: 10 }),
-      withSpring(0, { damping: 10 })
-    );
-  };
+  // Bottom tab bar height
+  const TAB_BAR_HEIGHT = 60;
 
   return (
-    <AnimatedPressable
-      style={[styles.fab, animatedStyle, { backgroundColor: colors.accent }]}
+    <Fab
+      size="lg"
+      placement="bottom right"
       onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
+      className="bg-success-500 active:bg-success-700"
+      style={{
+        position: 'absolute',
+        bottom: TAB_BAR_HEIGHT + insets.bottom + 16,
+        right: 16,
+        zIndex: 999,
+      }}
     >
-      <Ionicons name="create-outline" size={28} color={colors.background} />
-    </AnimatedPressable>
+      <FabIcon>
+        <Ionicons
+          name="create-outline"
+          size={28}
+          color={colors.background}
+        />
+      </FabIcon>
+    </Fab>
   );
 };
-
-const styles = StyleSheet.create({
-  fab: {
-    position: 'absolute',
-    bottom: SPACING.lg,
-    right: SPACING.lg,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    ...(Platform.OS === 'web'
-      ? {
-          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.3)',
-        }
-      : {
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8,
-        }),
-  },
-});
-

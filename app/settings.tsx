@@ -1,26 +1,19 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  StatusBar,
-  Modal,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Box, Text } from '@/components/restyle-components';
+import { SPACING } from '@/constants';
+import { Theme, useTheme } from '@/context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { useTheme, Theme } from '@/context/ThemeContext';
-import { SPACING, TYPOGRAPHY } from '@/constants';
+import React, { useState } from 'react';
+import { Modal, Pressable, ScrollView, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
   const { colors, theme, activeTheme, setTheme } = useTheme();
-  const [showThemeOptions, setShowThemeOptions] = useState(false);
+  const [showThemeDialog, setShowThemeDialog] = useState(false);
 
   const handleThemeChange = (newTheme: Theme) => {
     setTheme(newTheme);
-    setShowThemeOptions(false);
+    setShowThemeDialog(false);
   };
 
   const handleBack = () => {
@@ -44,9 +37,38 @@ export default function SettingsScreen() {
     }
   };
 
+  const SettingsItem = ({ 
+    label, 
+    onPress, 
+    rightElement 
+  }: { 
+    label: string; 
+    onPress?: () => void;
+    rightElement?: React.ReactNode;
+  }) => (
+    <>
+      <Pressable onPress={onPress}>
+        <Box
+          paddingHorizontal="m"
+          paddingVertical="l"
+          backgroundColor="background"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Text fontSize={16} color="textSecondary" fontWeight="400">
+            {label}
+          </Text>
+          {rightElement}
+        </Box>
+      </Pressable>
+      <Box height={1} backgroundColor="border" marginLeft="m" />
+    </>
+  );
+
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={{ flex: 1, backgroundColor: colors.background }}
       edges={['top']}
     >
       <StatusBar
@@ -55,270 +77,216 @@ export default function SettingsScreen() {
       />
 
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Pressable onPress={handleBack} style={styles.backButton}>
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="center"
+        paddingHorizontal="m"
+        paddingVertical="m"
+        position="relative"
+      >
+        <Pressable 
+          onPress={handleBack} 
+          style={{ position: 'absolute', left: SPACING.md, padding: SPACING.xs }}
+        >
           <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text.primary }]}>
+        <Text fontSize={18} fontWeight="400" color="textPrimary">
           Settings
         </Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      </Box>
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: SPACING.xl }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Account */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+        {/* Account Section */}
+        <Box marginBottom="l">
+          <Text
+            fontSize={18}
+            fontWeight="400"
+            color="textPrimary"
+            paddingHorizontal="m"
+            paddingVertical="l"
+          >
             Account
           </Text>
 
-          <Pressable style={[styles.listItem, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Become a Medium Member
-            </Text>
-            <Text style={styles.memberIcon}>✨</Text>
-          </Pressable>
+          <SettingsItem
+            label="Become a Medium Member"
+            rightElement={<Text fontSize={24}>✨</Text>}
+            onPress={() => console.log('Become a member')}
+          />
 
-          <Pressable style={[styles.listItem, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Story stats
-            </Text>
-          </Pressable>
+          <SettingsItem
+            label="Story stats"
+            onPress={() => console.log('Story stats')}
+          />
 
-          <Pressable style={[styles.listItem, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Account
-            </Text>
-          </Pressable>
-        </View>
+          <SettingsItem
+            label="Account"
+            onPress={() => console.log('Account')}
+          />
+        </Box>
 
-        {/* Configure Medium */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+        {/* Configure Medium Section */}
+        <Box marginBottom="l">
+          <Text
+            fontSize={18}
+            fontWeight="400"
+            color="textPrimary"
+            paddingHorizontal="m"
+            paddingVertical="l"
+          >
             Configure Medium
           </Text>
 
-          <Pressable style={[styles.listItem, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Refine recommendations
-            </Text>
-          </Pressable>
+          <SettingsItem
+            label="Refine recommendations"
+            onPress={() => console.log('Refine recommendations')}
+          />
 
-          {/* Theme */}
-          <Pressable
-            style={[styles.listItem, { borderBottomColor: colors.border }]}
-            onPress={() => setShowThemeOptions(true)}
+          <SettingsItem
+            label="Theme"
+            onPress={() => setShowThemeDialog(true)}
+            rightElement={
+              <Text fontSize={16} color="textPrimary" fontWeight="400">
+                {getThemeLabel()}
+              </Text>
+            }
+          />
+
+          <SettingsItem
+            label="Push notifications"
+            onPress={() => console.log('Push notifications')}
+          />
+
+          <SettingsItem
+            label="Email notifications"
+            onPress={() => console.log('Email notifications')}
+          />
+
+          <SettingsItem
+            label="Custom app icon"
+            onPress={() => console.log('Custom app icon')}
+          />
+
+          <SettingsItem
+            label="Downloaded content"
+            onPress={() => console.log('Downloaded content')}
+          />
+        </Box>
+
+        {/* Social Section */}
+        <Box>
+          <Text
+            fontSize={18}
+            fontWeight="400"
+            color="textPrimary"
+            paddingHorizontal="m"
+            paddingVertical="l"
           >
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Theme
-            </Text>
-            <Text style={[styles.themeValue, { color: colors.text.primary }]}>
-              {getThemeLabel()}
-            </Text>
-          </Pressable>
-
-          <Pressable style={[styles.listItem, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Push notifications
-            </Text>
-          </Pressable>
-
-          <Pressable style={[styles.listItem, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Email notifications
-            </Text>
-          </Pressable>
-
-          <Pressable style={[styles.listItem, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Custom app icon
-            </Text>
-          </Pressable>
-
-          <Pressable style={[styles.listItem, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.listItemText, { color: colors.text.secondary }]}>
-              Downloaded content
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* Social */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
             Social
           </Text>
-          <Text style={[styles.socialDescription, { color: colors.text.secondary }]}>
+          <Text
+            fontSize={15}
+            color="textSecondary"
+            paddingHorizontal="m"
+            lineHeight={22}
+            marginBottom="l"
+          >
             We will never post to X or Facebook without your permission.
           </Text>
-        </View>
+        </Box>
       </ScrollView>
 
-      {/* THEME MODAL */}
+      {/* THEME DIALOG */}
       <Modal
-        visible={showThemeOptions}
-        transparent
+        visible={showThemeDialog}
+        transparent={true}
         animationType="fade"
-        onRequestClose={() => setShowThemeOptions(false)}
+        onRequestClose={() => setShowThemeDialog(false)}
       >
-        <Pressable
-          style={styles.modalBackdrop}
-          onPress={() => setShowThemeOptions(false)}
-        />
-
-        <View style={styles.modalContainer}>
-          <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
-            <Text style={[styles.themeOptionsTitle, { color: colors.text.primary }]}>
+        <Pressable 
+          style={{ 
+            flex: 1, 
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: SPACING.xl,
+          }}
+          onPress={() => setShowThemeDialog(false)}
+        >
+          <Pressable 
+            style={{
+              backgroundColor: colors.surface,
+              borderRadius: 12,
+              padding: SPACING.xl,
+              width: '100%',
+              maxWidth: 400,
+            }}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <Text 
+              fontSize={22} 
+              fontWeight="400" 
+              color="textPrimary"
+              marginBottom="xl"
+            >
               Theme
             </Text>
 
-            {(['system', 'light', 'dark'] as Theme[]).map((item) => (
+            {['system', 'light', 'dark'].map((themeOption) => (
               <Pressable
-                key={item}
-                style={styles.themeOption}
-                onPress={() => handleThemeChange(item)}
+                key={themeOption}
+                onPress={() => handleThemeChange(themeOption as Theme)}
               >
-                <View style={styles.radioButton}>
-                  {theme === item && (
-                    <View
-                      style={[
-                        styles.radioButtonInner,
-                        { backgroundColor: colors.text.primary },
-                      ]}
-                    />
-                  )}
-                </View>
-                <Text style={[styles.themeOptionText, { color: colors.text.primary }]}>
-                  {item === 'system'
-                    ? 'System Default'
-                    : item.charAt(0).toUpperCase() + item.slice(1)}
-                </Text>
+                <Box
+                  flexDirection="row"
+                  alignItems="center"
+                  paddingVertical="m"
+                >
+                  <Box
+                    width={24}
+                    height={24}
+                    borderRadius="round"
+                    borderWidth={2}
+                    borderColor={theme === themeOption ? 'textPrimary' : 'textSecondary'}
+                    alignItems="center"
+                    justifyContent="center"
+                    marginRight="m"
+                  >
+                    {theme === themeOption && (
+                      <Box
+                        width={12}
+                        height={12}
+                        borderRadius="round"
+                        backgroundColor="textPrimary"
+                      />
+                    )}
+                  </Box>
+                  <Text fontSize={16} color="textPrimary" fontWeight="400">
+                    {themeOption === 'system' ? 'System Default' : 
+                     themeOption.charAt(0).toUpperCase() + themeOption.slice(1)}
+                  </Text>
+                </Box>
               </Pressable>
             ))}
 
-            <Pressable
-              style={styles.cancelButton}
-              onPress={() => setShowThemeOptions(false)}
-            >
-              <Text style={[styles.cancelButtonText, { color: colors.text.secondary }]}>
-                Cancel
-              </Text>
-            </Pressable>
-          </View>
-        </View>
+            <Box marginTop="l" alignItems="flex-end">
+              <Pressable
+                onPress={() => setShowThemeDialog(false)}
+                style={{ padding: SPACING.sm }}
+              >
+                <Text fontSize={16} color="textPrimary" fontWeight="400">
+                  Cancel
+                </Text>
+              </Pressable>
+            </Box>
+          </Pressable>
+        </Pressable>
       </Modal>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1 },
-
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
-  },
-
-  backButton: { padding: SPACING.xs },
-  headerTitle: { ...TYPOGRAPHY.h3, fontSize: 18 },
-  headerSpacer: { width: 40 },
-
-  scrollView: { flex: 1 },
-  scrollContent: { paddingBottom: SPACING.xl },
-
-  section: { paddingTop: SPACING.lg },
-
-  sectionTitle: {
-    ...TYPOGRAPHY.h3,
-    fontSize: 18,
-    paddingHorizontal: SPACING.md,
-    paddingBottom: SPACING.sm,
-  },
-
-  listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md + 4,
-    borderBottomWidth: 1,
-  },
-
-  listItemText: { ...TYPOGRAPHY.body, fontSize: 16 },
-  memberIcon: { fontSize: 24 },
-  themeValue: { fontSize: 16, fontWeight: '500' },
-
-  /* MODAL */
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-  },
-
-  modalContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  modalContent: {
-    width: '85%',
-    borderRadius: 16,
-    padding: SPACING.lg,
-    elevation: 10,
-  },
-
-  themeOptionsTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: SPACING.lg,
-  },
-
-  themeOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: SPACING.md,
-  },
-
-  radioButton: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#666',
-    marginRight: SPACING.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  radioButtonInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-
-  themeOptionText: { fontSize: 16 },
-
-  cancelButton: {
-    alignItems: 'flex-end',
-    paddingTop: SPACING.md,
-  },
-
-  cancelButtonText: { fontSize: 16 },
-
-  socialDescription: {
-    ...TYPOGRAPHY.body,
-    paddingHorizontal: SPACING.md,
-    lineHeight: 24,
-  },
-});
