@@ -1,14 +1,19 @@
 import { Box, Text } from '@/components/restyle-components';
 import { SPACING } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
-import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import type { RootStackParamList } from '@/types/navigation';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ArticleScreen() {
-  const { id } = useLocalSearchParams();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList, 'Article'>>();
+  const { id } = route.params ?? {};
   const { colors, activeTheme } = useTheme();
   const [avatarError, setAvatarError] = useState(false);
 
@@ -72,7 +77,7 @@ export default function ArticleScreen() {
         paddingHorizontal="m"
         paddingVertical="m"
       >
-        <Pressable onPress={() => router.back()} style={{ padding: SPACING.xs }}>
+        <Pressable onPress={() => navigation.goBack()} style={{ padding: SPACING.xs }}>
           <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
         </Pressable>
 

@@ -1,60 +1,14 @@
 {
+  "name": "medium",
+  "displayName": "medium",
+  "extra": {
+    "eas": {
+      "projectId": "336b7ffe-452c-4fa6-81ed-147aa97a3543"
+    }
+  },
   "expo": {
-    "name": "medium",
-    "slug": "medium",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "scheme": "medium",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
-    "jsEngine": "hermes",
-    
-
-    "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true
-        }
-      }
-    },
-
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE"
-      },
-      "permissions": [
-        "INTERNET",
-        "ACCESS_NETWORK_STATE"
-      ],
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.neha9044.medium",
-      "config": {
-        "usesCleartextTraffic": true
-      },
-      "enableShrinkResourcesInReleaseBuilds": true,
-      "enableProguardInReleaseBuilds": true
-    },
-
-    "web": {
-      "output": "static"
-    },
-
-    "plugins": [
-      "expo-router"
-    ],
-
-    "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
-    },
-
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "c5733c67-5b7e-4125-a564-40d99a812b27"
-      }
+      "package": "com.navyanair.medium"
     }
   }
 }

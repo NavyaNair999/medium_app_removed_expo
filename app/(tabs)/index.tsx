@@ -4,9 +4,11 @@ import { FloatingActionButton } from '@/components/FloatingActionButton';
 import { Box, Text } from '@/components/restyle-components';
 import { DUMMY_ARTICLES, SPACING } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
+import type { RootStackParamList } from '@/types/navigation';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Article } from '@/types';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
@@ -24,6 +26,7 @@ const TABS = ['For you', 'Featured'];
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function HomeScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState(0);
   const { colors, activeTheme } = useTheme();
   const insets = useSafeAreaInsets();
@@ -36,7 +39,7 @@ export default function HomeScreen() {
   const renderArticle = ({ item }: { item: Article }) => (
     <ArticleCard
       article={item}
-      onPress={() => router.push(`/article?id=${item.id}`)}
+      onPress={() => navigation.navigate('Article', { id: item.id })}
     />
   );
 

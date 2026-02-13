@@ -2,8 +2,10 @@ import { ArticleCard } from '@/components/ArticleCard';
 import { Box, Text } from '@/components/restyle-components';
 import { DUMMY_ARTICLES, SPACING } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import type { RootStackParamList } from '@/types/navigation';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StatusBar, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,6 +22,7 @@ const TOPIC_TAGS = [
 ];
 
 export default function SearchScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
   const { colors, activeTheme } = useTheme();
 
@@ -150,7 +153,7 @@ export default function SearchScreen() {
 
                   {/* Title */}
                   <Pressable
-                    onPress={() => router.push(`/article?id=${article.id}`)}
+                    onPress={() => navigation.navigate('Article', { id: article.id })}
                   >
                     <Text
                       fontSize={16}
@@ -198,7 +201,7 @@ export default function SearchScreen() {
             <ArticleCard
               key={article.id}
               article={article}
-              onPress={() => router.push(`/article?id=${article.id}`)}
+              onPress={() => navigation.navigate('Article', { id: article.id })}
             />
           ))}
         </Box>

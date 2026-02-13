@@ -2,7 +2,7 @@
 import { Box, Text } from '@/components/restyle-components';
 import { SPACING } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { forwardRef } from 'react';
 import { Pressable, View } from 'react-native';
 

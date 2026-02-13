@@ -1,13 +1,16 @@
 import { Box, Text } from '@/components/restyle-components';
 import { SPACING } from '@/constants';
 import { Theme, useTheme } from '@/context/ThemeContext';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import type { RootStackParamList } from '@/types/navigation';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { Modal, Pressable, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors, theme, activeTheme, setTheme } = useTheme();
   const [showThemeDialog, setShowThemeDialog] = useState(false);
 
@@ -17,10 +20,10 @@ export default function SettingsScreen() {
   };
 
   const handleBack = () => {
-    if (router.canGoBack()) {
-      router.back();
+    if (navigation.canGoBack()) {
+      navigation.goBack();
     } else {
-      router.push('/(tabs)/profile');
+      navigation.navigate('Tabs', { screen: 'Profile' });
     }
   };
 

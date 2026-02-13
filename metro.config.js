@@ -1,7 +1,5 @@
-import { getDefaultConfig } from 'expo/metro-config';
+const { getDefaultConfig } = require('@react-native/metro-config');
 
-const config = getDefaultConfig(
-  new URL('.', import.meta.url)
-);
+const config = getDefaultConfig(__dirname);
 
-export default config;
+module.exports = config;

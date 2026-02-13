@@ -1,7 +1,7 @@
 import { SPACING, TYPOGRAPHY } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
 import { Article } from '@/types';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -12,12 +12,7 @@ import {
   View,
 } from 'react-native';
 import { IconButton, Surface } from 'react-native-paper';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import { MotiView } from 'moti';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -26,29 +21,14 @@ interface ArticleCardProps {
   onPress?: () => void;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onPress }) => {
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
   const { colors } = useTheme();
   const [avatarError, setAvatarError] = useState(false);
   const [thumbnailError, setThumbnailError] = useState(false);
+  const [pressed, setPressed] = useState(false);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.98, { damping: 15 });
-    opacity.value = withTiming(0.8, { duration: 150 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15 });
-    opacity.value = withTiming(1, { duration: 150 });
-  };
+  const handlePressIn = () => setPressed(true);
+  const handlePressOut = () => setPressed(false);
 
   const getColorFromName = (name: string) => {
     const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
@@ -98,92 +78,92 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onPress }) =>
   };
 
   return (
-    <AnimatedPressable
-      style={[
-        styles.container,
-        animatedStyle,
-        {
-          backgroundColor: colors.background,
-          borderBottomColor: colors.border,
-        },
-      ]}
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-    >
-      <View style={styles.header}>
-        <View style={styles.authorContainer}>
-          {renderAvatar()}
-          <View style={styles.authorInfo}>
-            <View style={styles.authorNameRow}>
-              <Text style={[styles.authorName, { color: colors.text.primary }]}>
-                {article.author.name}
-              </Text>
-              {article.author.verified && (
-                <Ionicons
-                  name="checkmark-circle"
-                  size={16}
-                  color={colors.accent}
-                  style={styles.verifiedIcon}
-                />
-              )}
-            </View>
-            {article.collection && (
-              <View style={styles.collectionBadge}>
-                <Text style={[styles.collectionIcon, { color: colors.text.primary, backgroundColor: colors.accent }]}>
-                  {article.collection.icon}
-                </Text>
-                <Text style={[styles.collectionText, { color: colors.text.secondary }]}>
-                  In {article.collection.name}
-                </Text>
-                <Text style={[styles.collectionBy, { color: colors.text.secondary }]}> by </Text>
-                <Text style={[styles.collectionAuthor, { color: colors.text.primary }]}>
+    <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+      <MotiView
+        style={[
+          styles.container,
+          {
+            backgroundColor: colors.background,
+            borderBottomColor: colors.border,
+          },
+        ]}
+        animate={{ scale: pressed ? 0.98 : 1, opacity: pressed ? 0.8 : 1 }}
+        transition={{ type: 'spring', damping: 15 }}
+      >
+        <View style={styles.header}>
+          <View style={styles.authorContainer}>
+            {renderAvatar()}
+            <View style={styles.authorInfo}>
+              <View style={styles.authorNameRow}>
+                <Text style={[styles.authorName, { color: colors.text.primary }]}>
                   {article.author.name}
                 </Text>
+                {article.author.verified && (
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={16}
+                    color={colors.accent}
+                    style={styles.verifiedIcon}
+                  />
+                )}
               </View>
-            )}
+              {article.collection && (
+                <View style={styles.collectionBadge}>
+                  <Text style={[styles.collectionIcon, { color: colors.text.primary, backgroundColor: colors.accent }]}>
+                    {article.collection.icon}
+                  </Text>
+                  <Text style={[styles.collectionText, { color: colors.text.secondary }]}>
+                    In {article.collection.name}
+                  </Text>
+                  <Text style={[styles.collectionBy, { color: colors.text.secondary }]}> by </Text>
+                  <Text style={[styles.collectionAuthor, { color: colors.text.primary }]}>
+                    {article.author.name}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+          <IconButton
+            icon="dots-horizontal"
+            size={20}
+            iconColor={colors.text.secondary}
+            onPress={() => console.log('More options')}
+          />
+        </View>
+
+        <View style={styles.content}>
+          <View style={styles.textContent}>
+            <Text style={[styles.title, { color: colors.text.primary }]} numberOfLines={3}>
+              {article.title}
+            </Text>
+            <Text style={[styles.subtitle, { color: colors.text.secondary }]} numberOfLines={2}>
+              {article.subtitle}
+            </Text>
+          </View>
+          {renderThumbnail()}
+        </View>
+
+        <View style={styles.footer}>
+          <IconButton
+            icon="thumb-down-outline"
+            size={18}
+            iconColor={colors.text.secondary}
+            style={styles.dislikeButton}
+            onPress={() => console.log('Dislike')}
+          />
+          
+          <View style={styles.metaContainer}>
+            <Text style={[styles.metaText, { color: colors.text.secondary }]}>{article.date}</Text>
+            <Ionicons name="hand-left" size={16} color={colors.text.secondary} style={styles.iconSpacing} />
+            <Text style={[styles.metaText, { color: colors.text.secondary }]}>
+              {formatNumber(article.claps)}
+            </Text>
+            <Ionicons name="chatbubble" size={16} color={colors.text.secondary} style={styles.iconSpacing} />
+            <Text style={[styles.metaText, { color: colors.text.secondary }]}>{article.comments}</Text>
           </View>
         </View>
-        <IconButton
-          icon="dots-horizontal"
-          size={20}
-          iconColor={colors.text.secondary}
-          onPress={() => console.log('More options')}
-        />
-      </View>
-
-      <View style={styles.content}>
-        <View style={styles.textContent}>
-          <Text style={[styles.title, { color: colors.text.primary }]} numberOfLines={3}>
-            {article.title}
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.text.secondary }]} numberOfLines={2}>
-            {article.subtitle}
-          </Text>
-        </View>
-        {renderThumbnail()}
-      </View>
-
-      <View style={styles.footer}>
-        <IconButton
-          icon="thumb-down-outline"
-          size={18}
-          iconColor={colors.text.secondary}
-          style={styles.dislikeButton}
-          onPress={() => console.log('Dislike')}
-        />
-        
-        <View style={styles.metaContainer}>
-          <Text style={[styles.metaText, { color: colors.text.secondary }]}>{article.date}</Text>
-          <Ionicons name="hand-left" size={16} color={colors.text.secondary} style={styles.iconSpacing} />
-          <Text style={[styles.metaText, { color: colors.text.secondary }]}>
-            {formatNumber(article.claps)}
-          </Text>
-          <Ionicons name="chatbubble" size={16} color={colors.text.secondary} style={styles.iconSpacing} />
-          <Text style={[styles.metaText, { color: colors.text.secondary }]}>{article.comments}</Text>
-        </View>
-      </View>
-    </AnimatedPressable>
+      </MotiView>
+    </Pressable>
   );
 };
 

@@ -1,7 +1,7 @@
 import { Box, Text } from '@/components/restyle-components';
 import { SPACING } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

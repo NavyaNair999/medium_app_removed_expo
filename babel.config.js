@@ -2,12 +2,13 @@ module.exports = function (api) {
   api.cache(true);
 
   return {
-    presets: [['babel-preset-expo'], 'nativewind/babel'],
+    presets: ['module:@react-native/babel-preset', 'nativewind/babel'],
 
     plugins: [
       [
         'module-resolver',
         {
+          cwd: 'packagejson',
           root: ['./'],
 
           alias: {

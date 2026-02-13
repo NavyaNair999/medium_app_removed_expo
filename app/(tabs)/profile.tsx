@@ -4,8 +4,10 @@ import { TabBar } from '@/components/TabBar';
 import { Box, Text } from '@/components/restyle-components';
 import { DUMMY_PROFILE, SPACING } from '@/constants';
 import { useTheme } from '@/context/ThemeContext';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import type { RootStackParamList } from '@/types/navigation';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { Dimensions, Pressable, ScrollView, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,11 +16,12 @@ const PROFILE_TABS = ['Stories', 'Lists', 'About'];
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function ProfileScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState(0);
   const { colors, activeTheme } = useTheme();
 
   const handleSettingsPress = () => {
-    router.push('/settings');
+    navigation.navigate('Settings');
   };
 
   const getColorFromName = (name: string) => {
