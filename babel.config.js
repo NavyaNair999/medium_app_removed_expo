@@ -1,23 +1,15 @@
-module.exports = function (api) {
-  api.cache(true);
-
-  return {
-    presets: ['module:@react-native/babel-preset', 'nativewind/babel'],
-
-    plugins: [
-      [
-        'module-resolver',
-        {
-          cwd: 'packagejson',
-          root: ['./'],
-
-          alias: {
-            '@': './',
-            'tailwind.config': './tailwind.config.js',
-          },
+module.exports = {
+  presets: ['module:@react-native/babel-preset'],
+  plugins: [
+    [
+      'module-resolver',
+      {
+        root: ['./'],
+        alias: {
+          '@': './',
         },
-      ],
-      'react-native-worklets/plugin',
+      },
     ],
-  };
+    'react-native-reanimated/plugin',
+  ],
 };

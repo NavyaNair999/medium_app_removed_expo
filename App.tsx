@@ -1,23 +1,22 @@
-import { ThemeProvider, useTheme } from '@/context/ThemeContext';
-import type { RootStackParamList, TabParamList } from '@/types/navigation';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Box } from '@/components/restyle-components';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import ArticleScreen from '@/app/article';
-import SettingsScreen from '@/app/settings';
-import HomeScreen from '@/app/(tabs)/index';
+import { Box } from '@/components/restyle-components';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
+
 import FollowingScreen from '@/app/(tabs)/following';
-import SearchScreen from '@/app/(tabs)/search';
+import HomeScreen from '@/app/(tabs)/index';
 import LibraryScreen from '@/app/(tabs)/library';
 import ProfileScreen from '@/app/(tabs)/profile';
+import SearchScreen from '@/app/(tabs)/search';
+import ArticleScreen from '@/app/article';
+import SettingsScreen from '@/app/settings';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
-const Tabs = createBottomTabNavigator<TabParamList>();
+const Stack = createNativeStackNavigator();
+const Tabs = createBottomTabNavigator();
 
 function TabsNavigator() {
   const { colors } = useTheme();
@@ -50,9 +49,7 @@ function TabsNavigator() {
         tabBarActiveTintColor: colors.text.primary,
         tabBarInactiveTintColor: colors.text.secondary,
         tabBarShowLabel: false,
-        sceneStyle: {
-          backgroundColor: colors.background,
-        },
+      
       }}
     >
       <Tabs.Screen
@@ -63,6 +60,7 @@ function TabsNavigator() {
             renderIcon(focused ? 'home' : 'home-outline', focused, color),
         }}
       />
+
       <Tabs.Screen
         name="Following"
         component={FollowingScreen}
@@ -71,6 +69,7 @@ function TabsNavigator() {
             renderIcon(focused ? 'people' : 'people-outline', focused, color),
         }}
       />
+
       <Tabs.Screen
         name="Search"
         component={SearchScreen}
@@ -79,6 +78,7 @@ function TabsNavigator() {
             renderIcon(focused ? 'search' : 'search-outline', focused, color),
         }}
       />
+
       <Tabs.Screen
         name="Library"
         component={LibraryScreen}
@@ -87,6 +87,7 @@ function TabsNavigator() {
             renderIcon(focused ? 'bookmark' : 'bookmark-outline', focused, color),
         }}
       />
+
       <Tabs.Screen
         name="Profile"
         component={ProfileScreen}
